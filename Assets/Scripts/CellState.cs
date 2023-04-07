@@ -76,4 +76,58 @@ public class CellState {
         }
         return this.num_living_neighbors;
     }
+
+    public bool update_cell_states(string update_type) {
+        if (update_type == "life") {
+            return this.gameOfLife_update_cell_states();
+        }
+        if (update_type == "alternate") {
+            return this.alternate_update_cell_states();
+        }
+        return false;
+    }
+
+    public bool gameOfLife_update_cell_states() {
+        int num_living_neighbors = this.get_num_living_neighbors();
+        if (this.isAlive()) {
+            if (num_living_neighbors < 2) {
+                this.kill();
+                return true;
+            }
+            if (num_living_neighbors > 3) {
+                this.kill();
+                return true;
+            }
+            return false;
+        }
+        if (num_living_neighbors == 3) {
+            this.resurrect();
+            return true;
+        }
+        return false;
+    }
+
+    public bool alternate_update_cell_states() {
+        int num_living_neighbors = this.get_num_living_neighbors();
+        if (this.isAlive()) {
+            if (num_living_neighbors > 6) {
+                this.kill();
+                foreach (Cell item in this.getNeighbors()) {
+                    if (item.main_cell.isAlive()) {
+                        item.main_cell.kill();
+                    }
+                }   
+            }   
+            
+        }
+        if (num_living_neighbors <= 3) {
+            this.resurrect();
+            foreach (Cell item in this.getNeighbors()) {
+                if (!item.main_cell.isAlive()) {
+                    item.main_cell.resurrect();
+                }
+            }
+        }
+        return true;
+    }
 }

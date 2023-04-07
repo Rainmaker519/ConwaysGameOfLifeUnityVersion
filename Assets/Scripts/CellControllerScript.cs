@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CellControllerScript : MonoBehaviour
 {
+    private IEnumerator coroutine;
 
     //Square cell prefab
     public GameObject cellPrefab;
@@ -25,7 +26,8 @@ public class CellControllerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        createCellGrid(30,30);
+        createCellGrid(60,60);
+        StartCoroutine(wait_for_seconds(.5f));
     }
 
     // Update is called once per frame
@@ -39,8 +41,8 @@ public class CellControllerScript : MonoBehaviour
 
     public bool createCellGrid(double x, double y) {
         //just for now by default
-        scale_x = .3f;
-        scale_y = .3f;
+        scale_x = .18f;
+        scale_y = .18f;
 
         this.grid_width = (int)x;
         this.grid_height = (int)y;
@@ -52,7 +54,12 @@ public class CellControllerScript : MonoBehaviour
         int dist_from_center_y = (int)System.Math.Floor(y/2);
         for (int i = -dist_from_center_x; i < dist_from_center_x; i++) {
             for (int j = -dist_from_center_y; j < dist_from_center_y; j++) {
-                GameObject prefab = Instantiate(this.cellPrefab, new Vector3(scale_x * (i+x_offset_from_center), scale_y * (j+y_offset_from_center), 0), Quaternion.identity);
+                GameObject prefab = Instantiate(
+                    this.cellPrefab, 
+                    new Vector3(scale_x * (i+x_offset_from_center), 
+                    scale_y * (j+y_offset_from_center), 0), 
+                    Quaternion.identity
+                    );
                 prefab.transform.localScale = new Vector3(scale_x, scale_y, 1);
                 this.cellPrefabs.Add(prefab);
             }
@@ -124,13 +131,23 @@ public class CellControllerScript : MonoBehaviour
             else {
                 neighbors.Add(cellPrefabs[0].GetComponent<Cell>());
             }
-            
-            
-            Debug.Log(cell.main_cell);
-            Debug.Log(neighbors.Count);
             cell.setNeighbors(neighbors); 
-            Debug.Log(i);
         }
         return true;
+    }
+
+    public bool update_cell_states() {
+        for (int i = 0; i < this.cellPrefabs.Count; i++) {
+            Cell cell = this.cellPrefabs[i].GetComponent<Cell>();
+            cell.update_cell_state();
+        }
+        return true;
+    }
+
+    private IEnumerator wait_for_seconds(float seconds) {
+        while (true) {
+            yield return new WaitForSeconds(seconds);
+            update_cell_states();
+        }
     }
 }

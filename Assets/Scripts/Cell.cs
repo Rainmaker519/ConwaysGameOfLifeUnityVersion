@@ -16,7 +16,7 @@ public class Cell: MonoBehaviour {
         System.Random random = GameObject.Find("CellController").GetComponent<CellControllerScript>().random;
         float randomValue = (float)(random.NextDouble());
         bool is_alive;
-        if (randomValue > .5) {
+        if (randomValue > .1) {
             is_alive = true;
         } else {
             is_alive = false;
@@ -49,6 +49,11 @@ public class Cell: MonoBehaviour {
 
     public bool setNeighbors(List<Cell> neighbors) {
         this.main_cell.setNeighbors(neighbors);
+        return true;
+    }
+
+    public bool update_cell_state() {
+        this.main_cell.update_cell_states("alternate");
         return true;
     }
 }
